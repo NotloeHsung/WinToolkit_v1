@@ -59,10 +59,14 @@
             this.BWRemove = new System.ComponentModel.BackgroundWorker();
             this.cmdStart = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.cmdUnselectAllMenu = new System.Windows.Forms.ToolStripMenuItem();
+            this.importComponentListToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unselectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripTextBoxFilter = new System.Windows.Forms.ToolStripTextBox();
             this.SplitContainer1 = new System.Windows.Forms.SplitContainer();
             this.BWStart = new System.ComponentModel.BackgroundWorker();
-            this.cmdUnselectAll = new System.Windows.Forms.ToolStripMenuItem();
+            this.importComponentListExactToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cmsCR.SuspendLayout();
             this.ToolStrip1.SuspendLayout();
             this.SplitContainer1.Panel1.SuspendLayout();
@@ -129,6 +133,7 @@
             listViewGroup29,
             listViewGroup30});
             this.lstCL.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lstCL.HideSelection = false;
             this.lstCL.Location = new System.Drawing.Point(0, 0);
             this.lstCL.Name = "lstCL";
             this.lstCL.ShowItemToolTips = true;
@@ -246,11 +251,12 @@
             this.ToolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmdStart,
             this.cmdSelectAll,
-            this.cmdUnselectAll,
+            this.cmdUnselectAllMenu,
             this.cmdHelp,
             this.PBRemove,
             this.toolStripSeparator1,
-            this.lblStatus});
+            this.lblStatus,
+            this.toolStripTextBoxFilter});
             this.ToolStrip1.Location = new System.Drawing.Point(0, 0);
             this.ToolStrip1.Name = "ToolStrip1";
             this.ToolStrip1.Padding = new System.Windows.Forms.Padding(0);
@@ -259,10 +265,44 @@
             this.ToolStrip1.TabStop = true;
             this.ToolStrip1.Text = "ToolStrip1";
             // 
+            // cmdUnselectAllMenu
+            // 
+            this.cmdUnselectAllMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importComponentListToolStripMenuItem,
+            this.importComponentListExactToolStripMenuItem,
+            this.unselectAllToolStripMenuItem});
+            this.cmdUnselectAllMenu.Name = "cmdUnselectAllMenu";
+            this.cmdUnselectAllMenu.Size = new System.Drawing.Size(64, 25);
+            this.cmdUnselectAllMenu.Tag = "Refresh";
+            this.cmdUnselectAllMenu.Text = "Unselect";
+            this.cmdUnselectAllMenu.ToolTipText = "Unselect all components";
+            // 
+            // importComponentListToolStripMenuItem
+            // 
+            this.importComponentListToolStripMenuItem.Name = "importComponentListToolStripMenuItem";
+            this.importComponentListToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+            this.importComponentListToolStripMenuItem.Text = "Import ComponentList";
+            this.importComponentListToolStripMenuItem.Click += new System.EventHandler(this.ImportComponentListToolUnselect_Click);
+            // 
+            // unselectAllToolStripMenuItem
+            // 
+            this.unselectAllToolStripMenuItem.Name = "unselectAllToolStripMenuItem";
+            this.unselectAllToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+            this.unselectAllToolStripMenuItem.Text = "Unselect All";
+            this.unselectAllToolStripMenuItem.Click += new System.EventHandler(this.cmdUnselectAll_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripTextBoxFilter
+            // 
+            this.toolStripTextBoxFilter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.toolStripTextBoxFilter.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.toolStripTextBoxFilter.Name = "toolStripTextBoxFilter";
+            this.toolStripTextBoxFilter.Size = new System.Drawing.Size(100, 25);
+            this.toolStripTextBoxFilter.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBoxFilter_KeyUp);
             // 
             // SplitContainer1
             // 
@@ -289,14 +329,12 @@
             // 
             this.BWStart.DoWork += new System.ComponentModel.DoWorkEventHandler(this.BWStart_DoWork);
             // 
-            // cmdUnselectAll
+            // importComponentListExactToolStripMenuItem
             // 
-            this.cmdUnselectAll.Name = "cmdUnselectAll";
-            this.cmdUnselectAll.Size = new System.Drawing.Size(81, 25);
-            this.cmdUnselectAll.Tag = "Refresh";
-            this.cmdUnselectAll.Text = "Unselect All";
-            this.cmdUnselectAll.ToolTipText = "Unselect all components";
-            this.cmdUnselectAll.Click += new System.EventHandler(this.cmdUnselectAll_Click);
+            this.importComponentListExactToolStripMenuItem.Name = "importComponentListExactToolStripMenuItem";
+            this.importComponentListExactToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
+            this.importComponentListExactToolStripMenuItem.Text = "Import ComponentList exact";
+            this.importComponentListExactToolStripMenuItem.Click += new System.EventHandler(this.importComponentListExactToolStripMenuItem_Click);
             // 
             // frmComponentRemover
             // 
@@ -341,6 +379,10 @@
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem cmdOpenPackageMum;
-        internal System.Windows.Forms.ToolStripMenuItem cmdUnselectAll;
+        internal System.Windows.Forms.ToolStripMenuItem cmdUnselectAllMenu;
+        private System.Windows.Forms.ToolStripTextBox toolStripTextBoxFilter;
+        private System.Windows.Forms.ToolStripMenuItem importComponentListToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unselectAllToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importComponentListExactToolStripMenuItem;
     }
 }

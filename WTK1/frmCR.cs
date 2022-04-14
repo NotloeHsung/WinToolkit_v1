@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace WinToolkit
         private bool IMGChanged, MErr, Starting;
         static cComponents ComponentClass;
         WIMImage sImage = cMain.selectedImages[0];
+
+        Dictionary<ListViewItem, ListViewGroup> HiddenComponents = new Dictionary<ListViewItem, ListViewGroup>();
 
         public frmComponentRemover()
         {
@@ -115,7 +118,8 @@ namespace WinToolkit
                     cMain.FreeRAM();
                     cmdHelp.Visible = false;
                     cmdSelectAll.Visible = false;
-                    cmdUnselectAll.Visible = false;
+                    toolStripTextBoxFilter.Visible = false;
+                    cmdUnselectAllMenu.Visible = false;
                     cmdStart.Visible = false;
                     cMain.UpdateToolStripLabel(lblStatus, "Hiding Packages...");
                     Application.DoEvents();
@@ -129,7 +133,8 @@ namespace WinToolkit
                     {
                         cmdHelp.Visible = true;
                         cmdSelectAll.Visible = true;
-                        cmdUnselectAll.Visible = true;
+                        toolStripTextBoxFilter.Visible = true;
+                        cmdUnselectAllMenu.Visible = true;
                         cmdStart.Visible = true;
                         cMain.UpdateToolStripLabel(lblStatus, "Any item you select will be removed permanently!");
                         cmdStart.Text = "Remove Components";
@@ -241,12 +246,12 @@ namespace WinToolkit
                         }
                         if (I.Group.Header.StartsWithIgnoreCase("Metro"))
                         {
-                            cMain.UpdateToolStripLabel(lblStatus, "Removing " + I.Text +  "...");
+                            cMain.UpdateToolStripLabel(lblStatus, "Removing " + I.Text + "...");
                             Application.DoEvents();
                             string path = sImage.MountPath + "\\Program Files\\WindowsApps\\" + I.SubItems[2].Text;
                             cMain.TakeOwnership(path);
-                            Files.DeleteFolder(path,false);
-                            cReg.DeleteKey(Registry.LocalMachine,@"WIM_Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\PackageRepository\Packages",I.SubItems[2].Text);
+                            Files.DeleteFolder(path, false);
+                            cReg.DeleteKey(Registry.LocalMachine, @"WIM_Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\PackageRepository\Packages", I.SubItems[2].Text);
                             cReg.DeleteKey(Registry.LocalMachine, @"WIM_Software\Microsoft\Windows\CurrentVersion\Appx\AppxAllUserStore\Applications", I.SubItems[2].Text);
 
                         }
@@ -255,7 +260,7 @@ namespace WinToolkit
                             cMain.UpdateToolStripLabel(lblStatus, "(" + PBRemove.Value + "/ " + PBRemove.Maximum + ") Finding: " + C.ReplaceIgnoreCase(";", ""));
                             cReg.ShowPackages(C.ReplaceIgnoreCase(";", ""), false, true, false, sImage);
                         }
-                      
+
                     }
                 }
             }
@@ -280,7 +285,7 @@ namespace WinToolkit
                         cMain.UpdateToolStripLabel(lblStatus, n + "\\" + lstCL.CheckedItems.Count + " - " + I.Text);
 
                         if (!I.Group.Header.StartsWithIgnoreCase("Metro"))
-                        { 
+                        {
                             var NRA = (from C in I.SubItems[2].Text.Split(';') where !string.IsNullOrEmpty(C) select C.ReplaceIgnoreCase(";", "")).ToList();
 
                             foreach (string S in NRA)
@@ -530,11 +535,12 @@ namespace WinToolkit
                 cmdStart.Enabled = false;
                 lstCL.Enabled = false;
                 cmdSelectAll.Enabled = false;
-                cmdUnselectAll.Visible = false;
+                cmdUnselectAllMenu.Visible = false;
                 cMain.UpdateToolStripLabel(lblStatus, "You're crazy! There is nothing left to remove. Good luck!");
                 cmdStart.Visible = false;
                 cmdSelectAll.Visible = false;
-                cmdUnselectAll.Visible = false;
+                toolStripTextBoxFilter.Visible = false;
+                cmdUnselectAllMenu.Visible = false;
             }
             else
             {
@@ -576,7 +582,8 @@ namespace WinToolkit
         {
             lstCL.Enabled = E;
             cmdSelectAll.Visible = E;
-            cmdUnselectAll.Visible = E;
+            toolStripTextBoxFilter.Visible = E;
+            cmdUnselectAllMenu.Visible = E;
             cmdHelp.Visible = E;
             cMain.FreeRAM();
         }
@@ -744,6 +751,67 @@ namespace WinToolkit
                 item.Checked = false;
             }
             cMain.FreeRAM();
+        }
+
+        private void toolStripTextBoxFilter_KeyUp(object sender, KeyEventArgs e)
+        {
+            var hiddenItemsBefore = HiddenComponents.ToList();
+            foreach (ListViewItem item in lstCL.Items)
+            {
+                if (!item.Text.Contains(toolStripTextBoxFilter.Text))
+                {
+                    HiddenComponents.Add(item, item.Group);
+                    lstCL.Items.Remove(item);
+                }
+            }
+
+            foreach (var item in hiddenItemsBefore)
+            {
+                if (item.Key.Text.Contains(toolStripTextBoxFilter.Text))
+                {
+                    lstCL.Items.Add(item.Key);
+                    HiddenComponents.Remove(item.Key);
+                    item.Key.Group = item.Value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// unselects all entries from an imported component-List textfile.
+        /// </summary>
+        private void ImportComponentListToolUnselect_Click(object sender, EventArgs e)
+        {
+            ImportComponentListUnselect(false, false);
+        }
+
+        private void importComponentListExactToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ImportComponentListUnselect(true, false);
+        }
+
+        private void ImportComponentListUnselect(bool exactPackage, bool check)
+        {
+            var fileDlg = new OpenFileDialog();
+            fileDlg.Filter = "Text files(*.txt)| *.txt";
+            if (fileDlg.ShowDialog() != DialogResult.OK)
+                return;
+
+            var lines = File.ReadAllLines(fileDlg.FileName).Where(l => !l.StartsWith("["));
+
+            foreach (ListViewItem item in lstCL.Items)
+            {
+                foreach (var line in lines)
+                {
+                    string[] arr = line.Split(new string[] { ": " }, StringSplitOptions.RemoveEmptyEntries);
+                    var name = string.Join(": ", arr, 0, arr.Length - 1).ToString();
+                    var package = arr.Last();
+
+                    if (item.Text == name && (!exactPackage || package == item.SubItems[2].Text))
+                    {
+                        item.Checked = check;
+                    }
+                }
+            }
         }
 
         private void cmsSUI_Click(object sender, EventArgs e)

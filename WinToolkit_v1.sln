@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinToolkit", "WinToolkit.csproj", "{43432A09-7F92-4843-A183-02D98FA1F865}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinToolkit", "WTK1\WinToolkit.csproj", "{43432A09-7F92-4843-A183-02D98FA1F865}"
 	ProjectSection(ProjectDependencies) = postProject
 		{26978549-953B-4935-87AB-4F728A57CA11} = {26978549-953B-4935-87AB-4F728A57CA11}
 	EndProjectSection

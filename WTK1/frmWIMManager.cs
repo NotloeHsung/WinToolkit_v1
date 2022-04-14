@@ -1151,7 +1151,7 @@ namespace WinToolkit
                 }
 
                 if (cMain.SWT != 0) { cmdS.Visible = true; }
-                if (e.Item.Group.Header.EqualsIgnoreCase("Already Mounted Images"))
+                if (e.Item.Group?.Header.EqualsIgnoreCase("Already Mounted Images") ?? false)
                 {
 
                     if (e.Item.BackColor != Color.Yellow && e.Item.BackColor != Color.LightPink)
@@ -2606,7 +2606,7 @@ namespace WinToolkit
                 frmPrompt.cboRChoice.Items.Add("ServerStandard");
             }
             frmPrompt.cboRChoice.Visible = true;
-            
+
             foreach (ListViewItem LST in lstImages.SelectedItems)
             {
                 lblWIM.Text = W;
