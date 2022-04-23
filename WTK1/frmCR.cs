@@ -758,7 +758,7 @@ namespace WinToolkit
             var hiddenItemsBefore = HiddenComponents.ToList();
             foreach (ListViewItem item in lstCL.Items)
             {
-                if (!item.Text.Contains(toolStripTextBoxFilter.Text))
+                if (!item.Text.Contains(toolStripTextBoxFilter.Text, StringComparison.OrdinalIgnoreCase))
                 {
                     HiddenComponents.Add(item, item.Group);
                     lstCL.Items.Remove(item);
@@ -767,7 +767,7 @@ namespace WinToolkit
 
             foreach (var item in hiddenItemsBefore)
             {
-                if (item.Key.Text.Contains(toolStripTextBoxFilter.Text))
+                if (item.Key.Text.Contains(toolStripTextBoxFilter.Text, StringComparison.OrdinalIgnoreCase))
                 {
                     lstCL.Items.Add(item.Key);
                     HiddenComponents.Remove(item.Key);
